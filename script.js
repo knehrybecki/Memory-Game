@@ -1,104 +1,114 @@
 const main = document.querySelector('.main')
 
-const cards = [
+const card = [
     'images/0.jpg','images/1.jpg','images/2.jpg','images/3.jpg',
     'images/4.jpg','images/5.jpg','images/6.jpg','images/7.jpg'
 ]
 
-card = [...cards, ...cards]
+const cards = [...card, ...card]
 
-card.sort(() => Math.random() - 0.5)
+cards.sort(() => Math.random() - 0.5)
 
-let userClick = []
-let check = []
-let scores = 0
-let gamePairs = card.length/2
+let selectedCards = []
+let selectedDivCards = []
+let score = 0
+let cardPairs = cards.length / 2
 
-const createCard = () =>{
-    const game = document.createElement('div')
-    game.classList = "main__game"
+const game = document.createElement('div')
+game.classList = "main__game"
+main.appendChild(game)
+ 
+const renderGame= item => {
+    const mainCard = document.createElement('div')
+    mainCard.classList = "main__card"
 
-    main.appendChild(game)
+    const front = document.createElement('img')
+    front.setAttribute('src', item)
+    front.classList = "card"
 
-    card.forEach(item => {
-        const card = document.createElement('div')
-        card.classList = "main__card"
-    
-        const front = document.createElement('img')
-        front.setAttribute('src', item)
-        front.classList = "card"
+    const back = document.createElement('div')
+    back.classList = "card__back"
 
-        const back = document.createElement('div')
-        back.classList = "card__back"
+    game.appendChild(mainCard)
+    mainCard.appendChild(front)
+    mainCard.appendChild(back)      
 
-        game.appendChild(card)
-        card.appendChild(front)
-        card.appendChild(back)      
-
-        card.addEventListener('click',(event) =>{
-            card.classList.add("answer")
-            flipCard(event)
-            
-        }); 
-    
+    mainCard.addEventListener('click', event => {
+        mainCard.classList.add("answer")
+        flipCard(event)
     })
 }
 
-const flipCard = (event) =>{
+cards.forEach(item => renderGame(item));
+
+const flipCard = event => {
+    const mainCards = document.querySelectorAll('.main__card')
+
     const clickCard = event.target
-    const clickDiv = event.target.parentElement
-    
-    userClick = userClick.concat(clickCard)
-    check = check.concat(clickDiv)
-   
-    if (userClick.length === 1) {check[0].style.pointerEvents = "none"}
-    {check[0].style.pointerEvents = null}
+    const clickDivCard = event.target.parentElement
 
-    if (userClick.length === 2) {setTimeout(checkMatch,500)}   
+    selectedCards = selectedCards.concat(clickCard)
+    selectedDivCards = selectedDivCards.concat(clickDivCard)
+
+    const [divOne] = selectedDivCards
+
+    if (selectedCards.length === 1) {
+        divOne.style.pointerEvents = "none"
+    }
+
+    if (selectedCards.length === 2) {
+        setTimeout(checkCards,800),
+        mainCards.forEach(element => element.style.pointerEvents = "none")
+    }   
    
 }
 
-const checkMatch = () =>{
+const checkCards = () => {
     const mainScore= document.querySelector('.main__score')
+    const mainCards = document.querySelectorAll('.main__card')
+
+    const [cardOne,cardTwo] = selectedCards
  
-    if (userClick[0].getAttribute("src") === userClick[1].getAttribute("src"))
-    {
-        check.forEach(item =>item.style.pointerEvents = "none")
-      
-        scores ++
-        mainScore.textContent = "Scores: " + scores
+    if (cardOne.getAttribute("src") === cardTwo.getAttribute("src")) {
+        selectedDivCards.forEach(item => item.style.pointerEvents = "none" && item.classList.add("hit"))
+        mainCards.forEach(element => element.style.pointerEvents = null);
+
+        score++
+        mainScore.textContent = "Scores: " + score
     }
-    else
-    {  
-        check.forEach(item => item.classList.remove("answer") )
+    else {  
+        selectedDivCards.forEach(item => item.classList.remove("answer"))
+        mainCards.forEach(element => element.style.pointerEvents = null);
     }
 
-    userClick = []
-    check = []
+    selectedCards = []
+    selectedDivCards = []
 
-    restatGame(mainScore)
+    restartGame(mainScore)
 }
 
-const score = () => {
+const createScore = () => {
     const points = document.createElement('div')
     points.classList = "main__score"
-    points.textContent = "Scores: " + scores
-  
+    points.textContent = "Scores: " + score
+
     main.appendChild(points)
 }
 
-const restatGame = (mainScore) => {
-    const answer= document.querySelectorAll('.answer')
+const restartGame = mainScore => {
+    const resetCards = document.querySelectorAll('.answer')
 
-    if (scores === gamePairs) 
-    {
-        alert("koniec gry !")
-        scores = 0
-        mainScore.textContent = "Scores: " + scores
-       answer.forEach(item =>item.classList.remove("answer"))
-      answer.forEach(item => item.style.pointerEvents = null)
+    if (score === cardPairs) {
+        alert("The End Game!")
+
+        score = 0
+        mainScore.textContent = "Scores: " + score
+
+        resetCards.forEach(item => {
+            item.classList.remove("answer","hit")
+            item.style.pointerEvents = null
+        })
     } 
 }
 
-score()
-createCard()
+createScore()
