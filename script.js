@@ -1,11 +1,11 @@
 const main = document.querySelector('.main')
 
-const card = [
+const cards = [
     'images/0.jpg','images/1.jpg','images/2.jpg','images/3.jpg',
     'images/4.jpg','images/5.jpg','images/6.jpg','images/7.jpg'
 ]
 
-const cards = [...card, ...card]
+const renderCards = [...cards, ...cards]
 
 cards.sort(() => Math.random() - 0.5)
 
@@ -39,7 +39,7 @@ const renderGame = item => {
     })
 }
 
-cards.forEach(item => renderGame(item));
+renderCards.forEach(item => renderGame(item));
 
 const flipCard = event => {
     const mainCards = document.querySelectorAll('.main__card')
@@ -60,7 +60,6 @@ const flipCard = event => {
         setTimeout(checkCards, 800), 
         mainCards.forEach(element => element.style.pointerEvents = "none")
     }   
-   
 }
 
 const checkCards = () => {
@@ -70,7 +69,10 @@ const checkCards = () => {
     const [cardOne,cardTwo] = selectedCards
  
     if (cardOne.getAttribute('src') === cardTwo.getAttribute('src')) {
-        selectedDivCards.forEach(item => item.style.pointerEvents = "none" && item.classList.add('hit'))
+        selectedDivCards.forEach(item => {
+            item.style.pointerEvents = "none"
+            item.classList.add('hit')
+    })
         mainCards.forEach(element => element.style.pointerEvents = null)
 
         score++
